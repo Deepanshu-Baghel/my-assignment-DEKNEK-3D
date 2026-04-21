@@ -27,9 +27,18 @@ const createTask = async (req, res, next) => {
 
 const updateTask = async (req, res, next) => {
   try {
+    const allowedUpdates = ["title", "description", "isCompleted"];
+    const updates = {};
+
+    for (const field of allowedUpdates) {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updates[field] = req.body[field];
+      }
+    }
+
     const updatedTask = await Task.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
-      req.body,
+      updates,
       {
         new: true,
         runValidators: true,

@@ -1,7 +1,11 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const AppError = require("../utils/AppError");
-const { createToken, getCookieOptions } = require("../services/token.service");
+const {
+  createToken,
+  getCookieOptions,
+  getClearCookieOptions,
+} = require("../services/token.service");
 
 const sanitizeUser = (user) => ({
   id: user._id,
@@ -65,7 +69,7 @@ const login = async (req, res, next) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie("token", getCookieOptions());
+  res.clearCookie("token", getClearCookieOptions());
   res.status(200).json({ status: "success", message: "Logout successful" });
 };
 

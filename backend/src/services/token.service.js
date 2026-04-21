@@ -17,4 +17,10 @@ const getCookieOptions = () => ({
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 
-module.exports = { createToken, getCookieOptions };
+const getClearCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.COOKIE_SECURE === "true",
+  sameSite: process.env.COOKIE_SAME_SITE || "lax",
+});
+
+module.exports = { createToken, getCookieOptions, getClearCookieOptions };
