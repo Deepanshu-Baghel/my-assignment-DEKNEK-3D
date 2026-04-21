@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: secure-task-space-api
+    runtime: node
+    repo: https://github.com/Deepanshu-Baghel/my-assignment-DEKNEK-3D
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: COOKIE_SECURE
+        value: true
+      - key: COOKIE_SAME_SITE
+        value: none
+      - key: CLIENT_URL
+        value: https://secure-task-space-frontend.vercel.app
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
