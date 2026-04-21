@@ -3,21 +3,38 @@ import {
   getCurrentUser,
   loginUser,
   logoutUser,
+  resendVerificationEmail,
   signupUser,
+  verifyEmailToken,
 } from "../api/authApi";
 
 const AuthContext = createContext(null);
 
-const extractErrorMessage = (error) => {
+const extractError = (error) => {
   if (error?.response?.data?.details?.length) {
-    return error.response.data.details[0].msg;
+    return {
+      message: error.response.data.details[0].msg,
+      code: null,
+      details: error.response.data.details,
+    };
   }
 
   if (!error?.response && error?.code === "ERR_NETWORK") {
-    return "Backend server unreachable. Start backend and verify MongoDB URI/auth settings.";
+    return {
+      message: "Backend server unreachable. Start backend and verify MongoDB URI/auth settings.",
+      code: "NETWORK_ERROR",
+      details: null,
+    };
   }
 
-  return error?.response?.data?.message || "Something went wrong. Please try again.";
+  const data = error?.response?.data || {};
+  const details = data.details || null;
+
+  return {
+    message: data.message || "Something went wrong. Please try again.",
+    code: details && !Array.isArray(details) ? details.code || null : null,
+    details,
+  };
 };
 
 export const AuthProvider = ({ children }) => {
@@ -42,10 +59,9 @@ export const AuthProvider = ({ children }) => {
   const signup = async (formData) => {
     try {
       const response = await signupUser(formData);
-      setUser(response.user);
       return { ok: true, message: response.message || "Signup successful" };
     } catch (error) {
-      return { ok: false, message: extractErrorMessage(error) };
+      return { ok: false, ...extractError(error) };
     }
   };
 
@@ -55,7 +71,28 @@ export const AuthProvider = ({ children }) => {
       setUser(response.user);
       return { ok: true, message: response.message || "Login successful" };
     } catch (error) {
-      return { ok: false, message: extractErrorMessage(error) };
+      return { ok: false, ...extractError(error) };
+    }
+  };
+
+  const verifyEmail = async (token) => {
+    try {
+      const response = await verifyEmailToken({ token });
+      return { ok: true, message: response.message || "Email verified" };
+    } catch (error) {
+      return { ok: false, ...extractError(error) };
+    }
+  };
+
+  const resendVerification = async (email) => {
+    try {
+      const response = await resendVerificationEmail({ email });
+      return {
+        ok: true,
+        message: response.message || "Verification email sent.",
+      };
+    } catch (error) {
+      return { ok: false, ...extractError(error) };
     }
   };
 
@@ -73,6 +110,8 @@ export const AuthProvider = ({ children }) => {
       loading,
       signup,
       login,
+      verifyEmail,
+      resendVerification,
       logout,
     }),
     [user, loading]

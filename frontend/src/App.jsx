@@ -5,6 +5,7 @@ import PublicOnlyRoute from "./components/PublicOnlyRoute.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import VerifyEmailPage from "./pages/VerifyEmailPage.jsx";
 
 function HomeRedirect() {
   const { user, loading } = useAuth();
@@ -44,6 +45,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

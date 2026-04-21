@@ -13,4 +13,22 @@ const loginValidator = [
   body("password").notEmpty().withMessage("Password is required"),
 ];
 
-module.exports = { signupValidator, loginValidator };
+const verifyEmailValidator = [
+  body("token")
+    .trim()
+    .notEmpty()
+    .withMessage("Verification token is required")
+    .isLength({ min: 20 })
+    .withMessage("Verification token is invalid"),
+];
+
+const resendVerificationValidator = [
+  body("email").isEmail().withMessage("Provide a valid email").normalizeEmail(),
+];
+
+module.exports = {
+  signupValidator,
+  loginValidator,
+  verifyEmailValidator,
+  resendVerificationValidator,
+};

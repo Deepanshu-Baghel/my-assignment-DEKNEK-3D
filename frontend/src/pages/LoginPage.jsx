@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import ThemeToggle from "../components/ThemeToggle";
@@ -6,15 +6,25 @@ import ThemeToggle from "../components/ThemeToggle";
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, resendVerification } = useAuth();
 
   const [formData, setFormData] = useState({
-    email: "",
+    email: location.state?.signupEmail || "",
     password: "",
   });
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("error");
   const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [needsVerificationHelp, setNeedsVerificationHelp] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.verifiedNotice) {
+      setMessageType("success");
+      setMessage(location.state.verifiedNotice);
+      setNeedsVerificationHelp(true);
+    }
+  }, [location.state]);
 
   const handleChange = (event) => {
     setFormData((previous) => ({
@@ -32,15 +42,31 @@ const LoginPage = () => {
     if (!result.ok) {
       setMessageType("error");
       setMessage(result.message);
+      setNeedsVerificationHelp(result.code === "EMAIL_NOT_VERIFIED");
       setSubmitting(false);
       return;
     }
 
     setMessageType("success");
     setMessage(result.message);
+    setNeedsVerificationHelp(false);
     const fallbackPath = "/dashboard";
     const redirectPath = location.state?.from || fallbackPath;
     navigate(redirectPath, { replace: true });
+  };
+
+  const handleResendVerification = async () => {
+    if (!formData.email.trim()) {
+      setMessageType("error");
+      setMessage("Enter your email first, then resend verification.");
+      return;
+    }
+
+    setResending(true);
+    const result = await resendVerification(formData.email);
+    setMessageType(result.ok ? "success" : "error");
+    setMessage(result.message);
+    setResending(false);
   };
 
   return (
@@ -99,6 +125,17 @@ const LoginPage = () => {
             <button className="btn btn-primary" type="submit" disabled={submitting}>
               {submitting ? "Signing in..." : "Login"}
             </button>
+
+            {needsVerificationHelp ? (
+              <button
+                className="btn btn-secondary"
+                type="button"
+                onClick={handleResendVerification}
+                disabled={resending}
+              >
+                {resending ? "Sending verification email..." : "Resend verification email"}
+              </button>
+            ) : null}
 
             <p className="auth-footer">
               New here? <Link className="btn-link" to="/signup">Create an account</Link>
