@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import ThemeToggle from "../components/ThemeToggle";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,8 @@ const LoginPage = () => {
           <h1>Welcome back.</h1>
           <p className="subtitle">Log in to continue managing your tasks in one clean dashboard.</p>
         </div>
+
+        <ThemeToggle />
       </header>
 
       <section className="panel auth-grid">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import ThemeToggle from "../components/ThemeToggle";
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -49,6 +50,8 @@ const SignupPage = () => {
           <h1>Create your account.</h1>
           <p className="subtitle">Sign up to manage your personal task board with protected access.</p>
         </div>
+
+        <ThemeToggle />
       </header>
 
       <section className="panel auth-grid">

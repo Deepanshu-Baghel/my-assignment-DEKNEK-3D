@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createTask, deleteTask, fetchTasks, updateTask } from "../api/taskApi";
 import { useAuth } from "../hooks/useAuth";
+import ThemeToggle from "../components/ThemeToggle";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -138,6 +139,7 @@ const DashboardPage = () => {
         </div>
 
         <div className="logout-wrap">
+          <ThemeToggle />
           <span className="user-chip">{user?.email}</span>
           <button className="btn btn-secondary" onClick={handleLogout} type="button">
             Logout
