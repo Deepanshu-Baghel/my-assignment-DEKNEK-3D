@@ -39,13 +39,7 @@ const SignupPage = () => {
 
     setMessageType("success");
     setMessage(result.message);
-    navigate("/login", {
-      replace: true,
-      state: {
-        signupEmail: formData.email,
-        verifiedNotice: "Account created. Please verify your email before login.",
-      },
-    });
+    navigate("/dashboard", { replace: true });
   };
 
   return (
