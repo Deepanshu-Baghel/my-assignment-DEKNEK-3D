@@ -11,9 +11,26 @@ const {
 
 const app = express();
 
+const allowedOrigins = Array.from(
+  new Set(
+    [process.env.CLIENT_URL || "", "http://localhost:5173", "http://localhost:5174"]
+      .join(",")
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  )
+);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
