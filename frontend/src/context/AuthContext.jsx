@@ -13,6 +13,10 @@ const extractErrorMessage = (error) => {
     return error.response.data.details[0].msg;
   }
 
+  if (!error?.response && error?.code === "ERR_NETWORK") {
+    return "Backend server unreachable. Start backend and verify MongoDB URI/auth settings.";
+  }
+
   return error?.response?.data?.message || "Something went wrong. Please try again.";
 };
 
